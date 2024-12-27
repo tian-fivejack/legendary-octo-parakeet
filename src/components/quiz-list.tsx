@@ -1,6 +1,6 @@
 "use client";
 
-import { Quiz } from "@/src/lib/supabase/types";
+import { Quiz } from "@/lib/supabase/types";
 import { Card, CardHeader, CardTitle, CardDescription } from "./ui/card";
 import Link from "next/link";
 

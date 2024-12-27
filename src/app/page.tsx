@@ -1,8 +1,8 @@
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { QuizList } from "@/src/components/quiz-list";
-import { Button } from "@/src/components/ui/button";
+import { QuizList } from "@/components/quiz-list";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default async function Home() {

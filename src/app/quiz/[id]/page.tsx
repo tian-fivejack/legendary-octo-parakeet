@@ -1,7 +1,7 @@
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
-import { QuizComponent } from "@/src/components/quiz";
+import { QuizComponent } from "@/components/quiz";
 
 export default async function QuizPage({ params }: { params: { id: string } }) {
   const supabase = createServerComponentClient({ cookies });
