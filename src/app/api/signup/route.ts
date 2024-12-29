@@ -1,18 +1,25 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import supabaseClient from "@/lib/supabase/api-client";
+// import supabaseClient from "@/lib/supabase/api-client";
+import { createClient } from "@/lib/supabase/client";
 
 export async function POST(request: Request) {
   const { email, password } = await request.json();
-
-  const { data, error } = await supabaseClient.auth.signUp({
+  const supabase = await createClient();
+  const requestUrl = new URL(request.url);
+  const redirectTo = `${requestUrl.origin}/signup/callback`;
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
+    options: {
+      emailRedirectTo: redirectTo,
+    },
   });
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
+  console.log(data);
 
   // Check if session is available
   if (data.session) {
@@ -24,8 +31,10 @@ export async function POST(request: Request) {
     });
   } else {
     return NextResponse.json(
-      { error: "Session not available" },
-      { status: 400 }
+      {
+        message: "Signup successful! Please check your email for verification.",
+      },
+      { status: 200 }
     );
   }
 

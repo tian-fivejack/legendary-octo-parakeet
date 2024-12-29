@@ -1,17 +1,17 @@
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
+// import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+// import { redirect } from "next/navigation";
+// import { cookies } from "next/headers";
 import { RegisterForm } from "@/components/auth/register-form";
 
 export default async function RegisterPage() {
-  const supabase = createServerComponentClient({ cookies });
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  // const supabase = createServerComponentClient({ cookies });
+  // const {
+  //   data: { session },
+  // } = await supabase.auth.getSession();
 
-  if (session) {
-    redirect("/");
-  }
+  // if (session) {
+  //   redirect("/");
+  // }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">

@@ -7,6 +7,12 @@ export async function updateSession(request: NextRequest) {
     request,
   });
 
+  if (request.nextUrl.pathname.startsWith("/api")) {
+    return supabaseResponse;
+  }
+
+  const token = request.cookies.get("sb-access-token")?.value;
+
   const supabase = createServerClient(
     envConfig.supabaseUrl,
     envConfig.supabaseAnonKey,
@@ -36,20 +42,17 @@ export async function updateSession(request: NextRequest) {
 
   // IMPORTANT: DO NOT REMOVE auth.getUser()
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data } = await supabase.auth.getUser(token);
 
   if (
-    !user &&
+    !data.user &&
     !request.nextUrl.pathname.startsWith("/login") &&
     !request.nextUrl.pathname.startsWith("/auth") &&
-    !request.nextUrl.pathname.startsWith("/api") &&
     !request.nextUrl.pathname.startsWith("/register")
   ) {
-    // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
     url.pathname = "/login";
+
     return NextResponse.redirect(url);
   }
 

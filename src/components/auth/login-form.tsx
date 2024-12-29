@@ -33,18 +33,21 @@ export function LoginForm() {
 
   const handleLogin = async (email: string, password: string) => {
     try {
-      const data = await apiFetch("/api/login", {
+      // const data = await apiFetch("/api/login", {
+      await apiFetch("/api/login", {
         method: "POST",
         body: JSON.stringify({ email, password }),
       });
-      console.log(data);
+      // console.log(data);
 
       router.push("/");
       router.refresh();
       // Handle successful login (e.g., redirect or update UI)
     } catch (e) {
-      console.error(e);
-      setError("An error occurred during login");
+      if (e instanceof Error) {
+        console.error(e.message);
+        setError(e.message);
+      }
     }
   };
 

@@ -1,7 +1,5 @@
 export const apiFetch = async (url: string, options: RequestInit = {}) => {
   try {
-    console.log("before request");
-
     const response = await fetch(url, {
       ...options,
       headers: {
@@ -9,7 +7,6 @@ export const apiFetch = async (url: string, options: RequestInit = {}) => {
         ...options.headers,
       },
     });
-    console.log(response);
 
     if (!response.ok) {
       const errorData = await response.json();

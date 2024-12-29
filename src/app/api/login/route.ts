@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import supabaseClient from "@/lib/supabase/api-client";
+// import supabaseClient from "@/lib/supabase/api-client";
+import { createClient } from "@/lib/supabase/client";
 
 export async function POST(request: Request) {
   const { email, password } = await request.json();
+  const supabase = await createClient();
 
-  const { data, error } = await supabaseClient.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
@@ -15,7 +17,7 @@ export async function POST(request: Request) {
   }
 
   const cookieStore = cookies();
-  cookieStore.set("supabase_session", data.session.access_token, {
+  cookieStore.set("sb-access-token", data.session.access_token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     maxAge: data.session.expires_in,
