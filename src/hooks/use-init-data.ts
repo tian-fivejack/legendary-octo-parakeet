@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 export const useInitData = <T>(
   url: string,
-  queryObject: Record<string, string>,
+  queryObject?: Record<string, string>,
   transformData?: (data: T) => T
 ) => {
   const [data, setData] = useState<T | undefined>();
@@ -18,7 +18,10 @@ export const useInitData = <T>(
 
     const fetchData = async () => {
       const response = await fetch(String(urlWithParams));
-      const result: { data: T } = await response.json();
+      const result: { data: T; success: boolean } = await response.json();
+      if (!result.success) {
+        return;
+      }
       setData(transformData?.(result.data) || result.data);
     };
 

@@ -1,25 +1,38 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Quiz, Question } from "@/lib/supabase/types";
+import { useState, useEffect, useCallback } from "react";
+import { Quiz } from "@/lib/supabase/types";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Progress } from "./ui/progress";
 import { useRouter } from "next/navigation";
 
-export function QuizComponent({
-  quiz,
-  questions,
-}: {
-  quiz: Quiz;
-  questions: Question[];
-}) {
-  const router = useRouter();
+export function QuizComponent({ quiz }: { quiz: Quiz }) {
+  const { push } = useRouter();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes default
   const [isFinished, setIsFinished] = useState(false);
+  const questions = quiz.questions;
+
+  const handleFinish = useCallback(async () => {
+    setIsFinished(true);
+    const timeTaken = 300 - timeLeft;
+
+    await fetch(`/api/quiz/${quiz.id}/attempt`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        score,
+        time_taken: timeTaken,
+      }),
+    });
+
+    push(`/quiz/${quiz.id}/results?score=${score}&total=${questions.length}`);
+  }, [push, questions.length, quiz.id, score, timeLeft]);
 
   useEffect(() => {
     if (timeLeft > 0 && !isFinished) {
@@ -30,7 +43,7 @@ export function QuizComponent({
     } else if (timeLeft === 0 && !isFinished) {
       handleFinish();
     }
-  }, [timeLeft, isFinished]);
+  }, [timeLeft, isFinished, handleFinish]);
 
   const handleAnswer = (answer: string) => {
     setSelectedAnswer(answer);
@@ -49,26 +62,6 @@ export function QuizComponent({
     }
   };
 
-  const handleFinish = async () => {
-    setIsFinished(true);
-    const timeTaken = 300 - timeLeft;
-
-    await fetch(`/api/quiz/${quiz.id}/attempt`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        score,
-        time_taken: timeTaken,
-      }),
-    });
-
-    router.push(
-      `/quiz/${quiz.id}/results?score=${score}&total=${questions.length}`
-    );
-  };
-
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
@@ -85,7 +78,7 @@ export function QuizComponent({
           <p className="text-2xl mb-4">
             Your score: {score} out of {questions.length}
           </p>
-          <Button onClick={() => router.push("/")}>Back to Home</Button>
+          <Button onClick={() => push("/")}>Back to Home</Button>
         </CardContent>
       </Card>
     );

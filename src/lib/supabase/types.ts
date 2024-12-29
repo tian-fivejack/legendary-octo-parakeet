@@ -4,6 +4,7 @@ export type Quiz = {
   description: string | null;
   created_by: string;
   created_at: string;
+  questions: Question[];
 };
 
 export type Question = {

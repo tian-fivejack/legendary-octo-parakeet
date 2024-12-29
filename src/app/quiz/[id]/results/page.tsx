@@ -1,8 +1,11 @@
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+// import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+// import { cookies } from "next/headers";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+// import { QuizAttempt } from "@/lib/supabase/types";
+// import { useInitData } from "@/hooks/use-init-data";
+import { AttemptComponent } from "@/components/attemp-list";
 
 export default async function ResultsPage({
   params,
@@ -11,14 +14,18 @@ export default async function ResultsPage({
   params: { id: string };
   searchParams: { score: string; total: string };
 }) {
-  const supabase = createServerComponentClient({ cookies });
+  // const supabase = createServerComponentClient({ cookies });
 
-  const { data: attempts } = await supabase
-    .from("quiz_attempts")
-    .select("*")
-    .eq("quiz_id", params.id)
-    .order("score", { ascending: false })
-    .limit(10);
+  // const { data: attempts } = await supabase
+  //   .from("quiz_attempts")
+  //   .select("*")
+  //   .eq("quiz_id", params.id)
+  //   .order("score", { ascending: false })
+  //   .limit(10);
+
+  // const { data: attempts } = useInitData<QuizAttempt[]>(
+  //   `/api/quiz/${params.id}/results`
+  // );
 
   return (
     <div className="container mx-auto py-8">
@@ -41,8 +48,8 @@ export default async function ResultsPage({
                 %
               </p>
             </div>
-
-            {attempts && attempts.length > 0 && (
+            <AttemptComponent quiz_id={params.id} />
+            {/* {attempts && attempts.length > 0 && (
               <div>
                 <h3 className="text-xl font-semibold mb-4">Top Scores</h3>
                 <div className="space-y-2">
@@ -61,7 +68,7 @@ export default async function ResultsPage({
                   ))}
                 </div>
               </div>
-            )}
+            )} */}
 
             <div className="flex justify-center gap-4">
               <Button asChild>

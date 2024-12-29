@@ -1,77 +1,133 @@
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { createClient } from "@/lib/supabase/client";
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const supabase = createRouteHandlerClient({ cookies });
+  try {
+    const supabase = await createClient();
 
-  const { data: quizzes, error } = await supabase
-    .from("quizzes")
-    .select("*")
-    .order("created_at", { ascending: false });
+    const { data: quizzes, error } = await supabase
+      .from("quizzes")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Failed to fetch quizzes",
+          error: error.message,
+        },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true, data: quizzes }, { status: 200 });
+  } catch (err) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: "An unexpected error occurred",
+        error: (err as Error).message,
+      },
+      { status: 500 }
+    );
   }
-
-  return NextResponse.json(quizzes);
 }
 
+type Question = {
+  question: string;
+  options: string[];
+  correct_answer: string;
+};
+
 export async function POST(request: Request) {
-  const supabase = createRouteHandlerClient({ cookies });
-  const {
-    title,
-    description,
-    questions,
-  }: {
-    title: string;
-    description: string;
-    questions: Array<{
-      question: string;
-      options: Array<string>;
-      correct_answer: string;
-    }>;
-  } = await request.json();
+  try {
+    const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    const {
+      title,
+      description,
+      questions,
+    }: {
+      title: string;
+      description: string;
+      questions: Question[];
+    } = await request.json();
 
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+    if (
+      !title ||
+      !description ||
+      !Array.isArray(questions) ||
+      questions.length === 0
+    ) {
+      return NextResponse.json(
+        { success: false, message: "Invalid input data" },
+        { status: 400 }
+      );
+    }
 
-  const { data: quiz, error: quizError } = await supabase
-    .from("quizzes")
-    .insert([
-      {
-        title,
-        description,
-        created_by: user.id,
-      },
-    ])
-    .select()
-    .single();
+    const { data: authData, error: authError } = await supabase.auth.getUser();
 
-  if (quizError) {
-    return NextResponse.json({ error: quizError.message }, { status: 500 });
-  }
+    if (authError || !authData?.user) {
+      return NextResponse.json(
+        { success: false, message: "Unauthorized" },
+        { status: 401 }
+      );
+    }
 
-  const { error: questionsError } = await supabase.from("questions").insert(
-    questions.map((q) => ({
+    const user = authData.user;
+
+    const { data: quiz, error: quizError } = await supabase
+      .from("quizzes")
+      .insert([{ title, description, created_by: user.id }])
+      .select()
+      .single();
+
+    if (quizError) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Failed to create quiz",
+          error: quizError.message,
+        },
+        { status: 500 }
+      );
+    }
+
+    const formattedQuestions = questions.map((q) => ({
       quiz_id: quiz.id,
       question: q.question,
       options: q.options,
       correct_answer: q.correct_answer,
-    }))
-  );
+    }));
 
-  if (questionsError) {
+    const { error: questionsError } = await supabase
+      .from("questions")
+      .insert(formattedQuestions);
+
+    if (questionsError) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Failed to add questions",
+          error: questionsError.message,
+        },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(
-      { error: questionsError.message },
+      { success: true, data: quiz, message: "Quiz created successfully" },
+      { status: 201 }
+    );
+  } catch (err) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: "An unexpected error occurred",
+        error: (err as Error).message,
+      },
       { status: 500 }
     );
   }
-
-  return NextResponse.json(quiz);
 }

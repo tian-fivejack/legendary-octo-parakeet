@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useInitData } from "@/hooks/use-init-data";
 
 export function QuizList() {
-  const { data: quizzes } = useInitData<Quiz[]>("/api/quiz", {});
+  const { data: quizzes } = useInitData<Quiz[]>("/api/quiz");
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
