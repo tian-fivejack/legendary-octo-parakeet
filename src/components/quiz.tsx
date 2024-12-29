@@ -3,18 +3,27 @@
 import { useState, useEffect, useCallback } from "react";
 import { Quiz } from "@/lib/supabase/types";
 import { Button } from "./ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Progress } from "./ui/progress";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "@/hooks/use-language";
+import { translations } from "@/lib/i18n/translations";
+import { cn } from "@/lib/utils";
 
 export function QuizComponent({ quiz }: { quiz: Quiz }) {
   const { push } = useRouter();
+  const { language } = useLanguage();
+  const t = translations[language].quiz;
+
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const [isChecked, setIsChecked] = useState(false);
   const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes default
+  const [timeLeft, setTimeLeft] = useState(300);
   const [isFinished, setIsFinished] = useState(false);
+
   const questions = quiz.questions;
+  const isCorrect =
+    selectedAnswer === questions[currentQuestion].correct_answer;
 
   const handleFinish = useCallback(async () => {
     setIsFinished(true);
@@ -49,16 +58,20 @@ export function QuizComponent({ quiz }: { quiz: Quiz }) {
     setSelectedAnswer(answer);
   };
 
-  const handleNext = () => {
-    if (selectedAnswer === questions[currentQuestion].correct_answer) {
+  const handleCheck = () => {
+    setIsChecked(true);
+    if (isCorrect) {
       setScore((prev) => prev + 1);
     }
+  };
 
+  const handleNext = () => {
     if (currentQuestion === questions.length - 1) {
       handleFinish();
     } else {
       setCurrentQuestion((prev) => prev + 1);
       setSelectedAnswer(null);
+      setIsChecked(false);
     }
   };
 
@@ -70,58 +83,105 @@ export function QuizComponent({ quiz }: { quiz: Quiz }) {
 
   if (isFinished) {
     return (
-      <Card className="max-w-2xl mx-auto">
-        <CardHeader>
-          <CardTitle>Quiz Complete!</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-2xl mb-4">
-            Your score: {score} out of {questions.length}
-          </p>
-          <Button onClick={() => push("/")}>Back to Home</Button>
-        </CardContent>
-      </Card>
+      <div
+        className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md"
+        dir={language === "ar" ? "rtl" : "ltr"}
+      >
+        <h2 className="text-2xl font-bold mb-4">{t.score}</h2>
+        <p className="text-2xl mb-4">
+          {score} {t.outOf} {questions.length}
+        </p>
+        <Button onClick={() => push("/")}>{t.backHome}</Button>
+      </div>
     );
   }
 
   return (
-    <Card className="max-w-2xl mx-auto">
-      <CardHeader>
-        <div className="flex justify-between items-center mb-4">
-          <CardTitle>{quiz.title}</CardTitle>
-          <span className="text-2xl font-bold">{formatTime(timeLeft)}</span>
+    <div className="py-8 px-4">
+      <div
+        className="max-w-3xl mx-auto bg-gray-700 rounded-lg shadow-md h-[600px] flex flex-col"
+        dir={language === "ar" ? "rtl" : "ltr"}
+      >
+        <div className="p-6 border-b">
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-2xl font-bold">{quiz.title}</h1>
+            <div className="flex items-center gap-2">
+              <span>{t.timeLeft}:</span>
+              <span className="text-2xl font-bold">{formatTime(timeLeft)}</span>
+            </div>
+          </div>
+          <Progress
+            value={(currentQuestion + 1) * (100 / questions.length)}
+            className="mb-2"
+          />
         </div>
-        <Progress
-          value={(currentQuestion + 1) * (100 / questions.length)}
-          className="mb-4"
-        />
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
+
+        <div className="flex-1 overflow-y-auto p-6">
           <h2 className="text-xl font-semibold mb-4">
             {questions[currentQuestion].question}
           </h2>
+
           <div className="grid gap-2">
             {questions[currentQuestion].options.map((option) => (
               <Button
                 key={option}
-                variant={selectedAnswer === option ? "default" : "outline"}
-                className="w-full text-left justify-start"
+                variant={
+                  isChecked
+                    ? option === questions[currentQuestion].correct_answer
+                      ? "default"
+                      : option === selectedAnswer
+                      ? "destructive"
+                      : "outline"
+                    : selectedAnswer === option
+                    ? "default"
+                    : "outline"
+                }
+                className={cn(
+                  "w-full text-left justify-start",
+                  language === "ar" && "text-right justify-end"
+                )}
                 onClick={() => handleAnswer(option)}
+                disabled={isChecked}
               >
                 {option}
               </Button>
             ))}
           </div>
+
+          {isChecked && (
+            <div
+              className={cn(
+                "p-4 rounded-md mt-4",
+                isCorrect
+                  ? "bg-green-50 text-green-800"
+                  : "bg-red-50 text-red-800"
+              )}
+            >
+              {isCorrect ? (
+                t.correct
+              ) : (
+                <p>
+                  {t.incorrect} {questions[currentQuestion].correct_answer}
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="p-6 border-t">
           <Button
-            onClick={handleNext}
+            onClick={isChecked ? handleNext : handleCheck}
             disabled={!selectedAnswer}
-            className="w-full mt-4"
+            className="w-full"
           >
-            {currentQuestion === questions.length - 1 ? "Finish" : "Next"}
+            {isChecked
+              ? currentQuestion === questions.length - 1
+                ? t.finish
+                : t.next
+              : t.check}
           </Button>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
