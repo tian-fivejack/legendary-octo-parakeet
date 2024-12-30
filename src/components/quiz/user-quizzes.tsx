@@ -10,28 +10,35 @@ import {
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { useRouter } from "next/navigation";
+import { useInitData } from "@/hooks/use-init-data";
 
-interface UserQuizzesProps {
-  quizzes: Quiz[];
-}
+const quizParams = { owned: "true" };
 
-export function UserQuizzes({ quizzes }: UserQuizzesProps) {
-  const router = useRouter();
-  const supabase = createClientComponentClient();
+export function UserQuizzes() {
+  const { data: quizzes, fetchData: fetchQuizzes } = useInitData<Quiz[]>(
+    "/api/quiz",
+    quizParams
+  );
 
   const handleDelete = async (id: string) => {
-    const { error } = await supabase.from("quizzes").delete().eq("id", id);
+    const endpoint = `/api/quiz/${id}`;
+    const method = "DELETE";
 
-    if (!error) {
-      router.refresh();
+    const response = await fetch(endpoint, {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      await fetchQuizzes();
     }
   };
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {quizzes.map((quiz) => (
+      {quizzes?.map((quiz) => (
         <Card key={quiz.id} className="relative group">
           <CardHeader>
             <CardTitle className="pr-16">{quiz.title}</CardTitle>

@@ -1,14 +1,34 @@
 import { createClient } from "@/lib/supabase/client";
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const supabase = await createClient();
 
-    const { data: quizzes, error } = await supabase
+    const url = new URL(req.url);
+    const owned = url.searchParams.get("owned");
+
+    let query = supabase
       .from("quizzes")
       .select("*")
       .order("created_at", { ascending: false });
+
+    if (owned === "true") {
+      const { data: authData, error: authError } =
+        await supabase.auth.getUser();
+
+      if (authError || !authData?.user) {
+        return NextResponse.json(
+          { success: false, message: "Unauthorized" },
+          { status: 401 }
+        );
+      }
+
+      const createdBy = authData.user.id;
+      query = query.eq("created_by", createdBy);
+    }
+
+    const { data: quizzes, error } = await query;
 
     if (error) {
       return NextResponse.json(

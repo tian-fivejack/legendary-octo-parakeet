@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 export const useInitData = <T>(
   url: string,
@@ -7,7 +7,7 @@ export const useInitData = <T>(
 ) => {
   const [data, setData] = useState<T | undefined>();
 
-  useEffect(() => {
+  const fetchData = useCallback(async () => {
     const baseUrl = window.location.origin;
     const urlWithParams = new URL(url, baseUrl);
     if (queryObject) {
@@ -16,18 +16,36 @@ export const useInitData = <T>(
       });
     }
 
-    const fetchData = async () => {
-      const response = await fetch(String(urlWithParams));
-      const result: { data: T; success: boolean } = await response.json();
-      if (!result.success) {
-        return;
-      }
+    const response = await fetch(String(urlWithParams));
+    const result: { data: T; success: boolean } = await response.json();
+    if (!result.success) {
+      return;
+    }
 
-      setData(transformData?.(result.data) || result.data);
-    };
-
-    fetchData();
+    setData(transformData?.(result.data) || result.data);
   }, [queryObject, transformData, url]);
 
-  return { data };
+  useEffect(() => {
+    // const baseUrl = window.location.origin;
+    // const urlWithParams = new URL(url, baseUrl);
+    // if (queryObject) {
+    //   Object.keys(queryObject).forEach((key) => {
+    //     urlWithParams.searchParams.append(key, queryObject[key]);
+    //   });
+    // }
+
+    // const fetchData = async () => {
+    //   const response = await fetch(String(urlWithParams));
+    //   const result: { data: T; success: boolean } = await response.json();
+    //   if (!result.success) {
+    //     return;
+    //   }
+
+    //   setData(transformData?.(result.data) || result.data);
+    // };
+
+    fetchData();
+  }, [fetchData]);
+
+  return { data, fetchData };
 };
