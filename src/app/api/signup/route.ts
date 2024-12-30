@@ -19,7 +19,6 @@ export async function POST(request: Request) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
-  console.log(data);
 
   // Check if session is available
   if (data.session) {

@@ -22,6 +22,7 @@ export const useInitData = <T>(
       if (!result.success) {
         return;
       }
+
       setData(transformData?.(result.data) || result.data);
     };
 

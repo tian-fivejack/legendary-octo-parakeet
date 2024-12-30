@@ -27,14 +27,14 @@ export function AuthForm({ onSubmit, error, mode }: AuthFormProps) {
 
   return (
     <div
-      className="bg-white p-8 rounded-lg shadow-md w-full max-w-md"
+      className="bg-gray-900 p-8 rounded-lg shadow-md w-full max-w-md"
       dir={language === "ar" ? "rtl" : "ltr"}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label
             htmlFor="email"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-gray-100"
           >
             {t.email}
           </label>
@@ -50,7 +50,7 @@ export function AuthForm({ onSubmit, error, mode }: AuthFormProps) {
         <div>
           <label
             htmlFor="password"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-gray-100"
           >
             {t.password}
           </label>
@@ -68,7 +68,7 @@ export function AuthForm({ onSubmit, error, mode }: AuthFormProps) {
           {mode === "login" ? t.login : t.register}
         </Button>
       </form>
-      <p className="mt-4 text-center text-sm text-gray-600">
+      <p className="mt-4 text-center text-sm text-gray-300">
         {mode === "login" ? (
           <>
             {t.dontHaveAccount}{" "}

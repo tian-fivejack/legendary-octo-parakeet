@@ -7,11 +7,7 @@ export function LanguageToggle() {
   const { language, toggleLanguage } = useLanguage();
 
   return (
-    <Button
-      onClick={toggleLanguage}
-      variant="outline"
-      className="fixed top-4 right-4 rtl:left-4 rtl:right-auto"
-    >
+    <Button onClick={toggleLanguage} variant="outline">
       {language === "en" ? "العربية" : "English"}
     </Button>
   );

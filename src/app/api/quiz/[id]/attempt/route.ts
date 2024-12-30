@@ -49,7 +49,6 @@ export async function GET(
         { status: 400 }
       );
     }
-    console.log(request);
 
     // Fetch the quiz by ID
     const { data: attempts, error: attemptError } = await supabase

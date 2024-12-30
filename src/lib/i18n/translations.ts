@@ -1,5 +1,20 @@
 export const translations = {
   en: {
+    auth: {
+      email: "Email",
+      password: "Password",
+      login: "Sign In",
+      register: "Sign Up",
+      createAccount: "Create Account",
+      alreadyHaveAccount: "Already have an account?",
+      dontHaveAccount: "Don't have an account?",
+      signIn: "Sign in",
+      signUp: "Sign up",
+    },
+    home: {
+      availableQuizzes: "Available Quizzes",
+      createQuiz: "Create Quiz",
+    },
     quiz: {
       check: "Check Answer",
       next: "Next Question",
@@ -12,17 +27,6 @@ export const translations = {
       backHome: "Back to Home",
       tryAgain: "Try Again",
     },
-    auth: {
-      email: "Email",
-      password: "Password",
-      login: "Sign In",
-      register: "Sign Up",
-      createAccount: "Create Account",
-      alreadyHaveAccount: "Already have an account?",
-      dontHaveAccount: "Don't have an account?",
-      signIn: "Sign in",
-      signUp: "Sign up",
-    },
     results: {
       quizResults: "Quiz Results",
       yourScore: "Your Score",
@@ -31,8 +35,28 @@ export const translations = {
       backHome: "Back to Home",
       tryAgain: "Try Again",
     },
+    siteHeader: {
+      home: "Home",
+      myQuizzes: "My Quizzes",
+      logout: "Logout",
+    },
   },
   ar: {
+    auth: {
+      email: "البريد الإلكتروني",
+      password: "كلمة المرور",
+      login: "تسجيل الدخول",
+      register: "إنشاء حساب",
+      createAccount: "إنشاء حساب جديد",
+      alreadyHaveAccount: "لديك حساب بالفعل؟",
+      dontHaveAccount: "ليس لديك حساب؟",
+      signIn: "تسجيل الدخول",
+      signUp: "التسجيل",
+    },
+    home: {
+      availableQuizzes: "الاختبارات المتاحة",
+      createQuiz: "إنشاء اختبار",
+    },
     quiz: {
       check: "تحقق من الإجابة",
       next: "السؤال التالي",
@@ -45,17 +69,6 @@ export const translations = {
       backHome: "العودة للرئيسية",
       tryAgain: "حاول مرة أخرى",
     },
-    auth: {
-      email: "البريد الإلكتروني",
-      password: "كلمة المرور",
-      login: "تسجيل الدخول",
-      register: "إنشاء حساب",
-      createAccount: "إنشاء حساب جديد",
-      alreadyHaveAccount: "لديك حساب بالفعل؟",
-      dontHaveAccount: "ليس لديك حساب؟",
-      signIn: "تسجيل الدخول",
-      signUp: "التسجيل",
-    },
     results: {
       quizResults: "نتائج الاختبار",
       yourScore: "نتيجتك",
@@ -63,6 +76,11 @@ export const translations = {
       points: "نقطة",
       backHome: "العودة للرئيسية",
       tryAgain: "حاول مرة أخرى",
+    },
+    siteHeader: {
+      home: "الرئيسية",
+      myQuizzes: "اختباراتي",
+      logout: "تسجيل الخروج",
     },
   },
 };
