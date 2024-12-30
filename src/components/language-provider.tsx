@@ -5,7 +5,6 @@ import { ReactNode, useState } from "react";
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguage] = useState<"en" | "ar">(() => {
-    // Retrieve the saved language from localStorage, defaulting to 'en'
     return (
       ((typeof window !== "undefined" && localStorage.getItem("language")) as
         | "en"

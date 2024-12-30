@@ -50,7 +50,6 @@ export async function GET(
       );
     }
 
-    // Fetch the quiz by ID
     const { data: attempts, error: attemptError } = await supabase
       .from("quiz_attempts")
       .select("*")

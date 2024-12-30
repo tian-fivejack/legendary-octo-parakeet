@@ -12,7 +12,7 @@ export function QuizList() {
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {quizzes?.map((quiz) => (
         <Link key={quiz.id} href={`/quiz/${quiz.id}`}>
-          <Card className="hover:shadow-lg transition-shadow">
+          <Card className="hover:shadow-lg transition-shadow h-full">
             <CardHeader>
               <CardTitle>{quiz.title}</CardTitle>
               <CardDescription>{quiz.description}</CardDescription>

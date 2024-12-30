@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-// import supabaseClient from "@/lib/supabase/api-client";
 import { createClient } from "@/lib/supabase/client";
 
 export async function POST(request: Request) {
@@ -20,7 +19,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
 
-  // Check if session is available
   if (data.session) {
     const cookieStore = cookies();
     cookieStore.set("supabase_session", data.session.access_token, {

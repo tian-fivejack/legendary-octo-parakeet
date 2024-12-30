@@ -17,7 +17,6 @@ export async function GET(
       );
     }
 
-    // Fetch the quiz by ID
     const { data: quiz, error: quizError } = await supabase
       .from("quizzes")
       .select("*")
@@ -31,7 +30,6 @@ export async function GET(
       );
     }
 
-    // Optionally, fetch questions associated with the quiz
     const { data: questions, error: questionsError } = await supabase
       .from("questions")
       .select("*")
@@ -87,7 +85,6 @@ export async function PUT(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Update quiz
   const { error: quizError } = await supabase
     .from("quizzes")
     .update({ title, description })
@@ -98,7 +95,6 @@ export async function PUT(
     return NextResponse.json({ error: quizError.message }, { status: 500 });
   }
 
-  // Delete existing questions
   const { error: deleteError } = await supabase
     .from("questions")
     .delete()
@@ -108,7 +104,6 @@ export async function PUT(
     return NextResponse.json({ error: deleteError.message }, { status: 500 });
   }
 
-  // Insert new questions
   const { error: questionsError } = await supabase.from("questions").insert(
     questions.map((q) => ({
       quiz_id: params.id,
